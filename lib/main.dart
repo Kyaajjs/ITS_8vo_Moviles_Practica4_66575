@@ -84,38 +84,76 @@
     Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(title: const Text('Iniciar sesión')),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Campo de correo
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Correo'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-              // Campo de contraseña
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true,
-              ),
-              const SizedBox(height: 32),
-              // Botón de login
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                onPressed: _login,
-                child: const Text('Iniciar sesión'),
-              ),
-            ],
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueAccent, Colors.lightBlue],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Image.asset(
+                  'assets/logo.png', // Asegúrate de tener una imagen llamada logo.png en el directorio de assets
+                  width: 100,
+                  height: 100,
+                ),
+                const SizedBox(height: 20),
+                // Campo de correo
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+                // Campo de contraseña
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 32),
+                // Botón de login
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                  onPressed: _login,
+                  child: const Text('Iniciar sesión'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    minimumSize: const Size(double.infinity, 0),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
   }
+
   //app original
 
   class MyHomePage extends StatefulWidget {
@@ -281,18 +319,17 @@
   }
 
   class _RegisterScreenState extends State<RegisterScreen> {
-    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _usernameController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
 
     bool _isLoading = false;
-    bool _rememberMe = false;
 
     // Función para registrar al usuario
     void _register() async {
-      final email = _emailController.text.trim();
+      final username = _usernameController.text.trim();
       final password = _passwordController.text.trim();
 
-      if (email.isEmpty || password.isEmpty) {
+      if (username.isEmpty || password.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Por favor completa todos los campos')),
         );
@@ -303,7 +340,7 @@
 
       try {
         // Llamada al método register de ApiService
-        final token = await ApiService.register(email, password);
+        final token = await ApiService.register(username, password);
         if (token != null) {
           // Si el backend retorna el token, podemos navegar al login
           Navigator.pushReplacementNamed(context, '/login');
@@ -320,95 +357,90 @@
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-        // Eliminamos el AppBar para un diseño a pantalla completa
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          // Fondo degradado
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFE0ECFF), // Ajusta estos colores a tu preferencia
-                Color(0xFFD2E3F3),
+        // Fondo blanco y sin degradado para simplificar el diseño
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Título principal
+                const Text(
+                  "Register",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+
+                // Campo de username (Correo)
+                _buildRoundedTextField(
+                  controller: _usernameController,
+                  label: "User name",
+                  hint: "Enter your email",
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+
+                // Campo de contraseña
+                _buildRoundedTextField(
+                  controller: _passwordController,
+                  label: "Password",
+                  hint: "Enter your password",
+                  obscure: true,
+                ),
+                const SizedBox(height: 32),
+
+                // Botón de registro (Submit)
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _register,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Botón de reset
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _usernameController.clear();
+                        _passwordController.clear();
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    child: const Text(
+                      'Reset',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
               ],
-            ),
-          ),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Título principal centrado
-                  const Text(
-                    "Registrarme",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Campo de correo
-                  _buildRoundedTextField(
-                    controller: _emailController,
-                    label: "Correo",
-                    hint: "Ingresa tu correo",
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo de contraseña
-                  _buildRoundedTextField(
-                    controller: _passwordController,
-                    label: "Contraseña",
-                    hint: "Ingresa tu contraseña",
-                    obscure: true,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // “Remember me”
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: (value) {
-                          setState(() => _rememberMe = value ?? false);
-                        },
-                      ),
-                      const Text("Guardar"),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Botón de registro
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Registrarme',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ),
         ),
@@ -434,13 +466,14 @@
           fillColor: Colors.white,
           contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(5),
             borderSide: BorderSide.none,
           ),
         ),
       );
     }
   }
+
   // Pantalla para agregar/editar tareas
   class TaskScreen extends StatefulWidget {
     final Map<String, dynamic>? task;
