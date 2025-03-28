@@ -5,6 +5,7 @@
 
 
   void main() async {
+
     WidgetsFlutterBinding.ensureInitialized();
     await dotenv.load(fileName: ".env"); // Cargar variables de entorno
     runApp(const MyApp());
@@ -214,6 +215,14 @@
         return;
       }
 
+      // Validar que la contraseña tenga al menos 8 caracteres
+      if (password.length < 8) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('La contraseña debe tener al menos 8 caracteres')),
+        );
+        return;
+      }
+
       setState(() => _isLoading = true);
 
       try {
@@ -313,7 +322,7 @@
                             Color(0xFF9733EE),
                           ],
                         ).createShader(
-                          Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                          const Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
                         ),
                     ),
                     textAlign: TextAlign.center,
