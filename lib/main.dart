@@ -30,129 +30,6 @@
     }
   }
 
-  // Pantalla de Login
-  class LoginScreen extends StatefulWidget {
-    const LoginScreen({super.key});
-
-    @override
-    State<LoginScreen> createState() => _LoginScreenState();
-  }
-
-  class _LoginScreenState extends State<LoginScreen> {
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
-    bool _isLoading = false;
-
-    void _login() async {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-
-      if (email.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor ingresa correo y contraseña')),
-        );
-        return;
-      }
-
-      setState(() => _isLoading = true);
-
-      try {
-        // Llamamos a la función real de login que devuelve un token
-        final token = await ApiService.login(email, password);
-        if (token != null) {
-          // Aquí podrías almacenar el token de forma segura (ej: secure_storage)
-          // Navegar a la pantalla principal
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MyHomePage(title: 'ToDo List'),
-            ),
-          );
-        } else {
-          throw 'Credenciales incorrectas';
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      } finally {
-        setState(() => _isLoading = false);
-      }
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Iniciar sesión')),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blueAccent, Colors.lightBlue],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo
-                Image.asset(
-                  'assets/logo.png', // Asegúrate de tener una imagen llamada logo.png en el directorio de assets
-                  width: 100,
-                  height: 100,
-                ),
-                const SizedBox(height: 20),
-                // Campo de correo
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Correo',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                // Campo de contraseña
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 32),
-                // Botón de login
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Iniciar sesión'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    minimumSize: const Size(double.infinity, 0),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
 
   //app original
 
@@ -311,6 +188,7 @@
   }
   //Pantalla de registro
 
+
   class RegisterScreen extends StatefulWidget {
     const RegisterScreen({Key? key}) : super(key: key);
 
@@ -342,7 +220,7 @@
         // Llamada al método register de ApiService
         final token = await ApiService.register(username, password);
         if (token != null) {
-          // Si el backend retorna el token, podemos navegar al login
+          // Si el backend retorna el token, navegamos al login
           Navigator.pushReplacementNamed(context, '/login');
         }
       } catch (e) {
@@ -354,99 +232,6 @@
       }
     }
 
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        // Fondo blanco y sin degradado para simplificar el diseño
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Título principal
-                const Text(
-                  "Register",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-
-                // Campo de username (Correo)
-                _buildRoundedTextField(
-                  controller: _usernameController,
-                  label: "User name",
-                  hint: "Enter your email",
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-
-                // Campo de contraseña
-                _buildRoundedTextField(
-                  controller: _passwordController,
-                  label: "Password",
-                  hint: "Enter your password",
-                  obscure: true,
-                ),
-                const SizedBox(height: 32),
-
-                // Botón de registro (Submit)
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _register,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Botón de reset
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _usernameController.clear();
-                        _passwordController.clear();
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    child: const Text(
-                      'Reset',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
     // Campo de texto con estilo redondeado
     Widget _buildRoundedTextField({
       required TextEditingController controller,
@@ -455,24 +240,322 @@
       bool obscure = false,
       TextInputType keyboardType = TextInputType.text,
     }) {
-      return TextField(
-        controller: controller,
-        obscureText: obscure,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(5),
-            borderSide: BorderSide.none,
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          // Efecto de sombra para darle profundidad
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 4,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: hint,
+            labelStyle: const TextStyle(color: Colors.white70),
+            hintStyle: const TextStyle(color: Colors.white54),
+            filled: true,
+            fillColor: Colors.black54, // Fondo semitransparente
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 24,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      );
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        // Usamos un Container con gradiente para el fondo
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0F2027),
+                Color(0xFF203A43),
+                Color(0xFF2C5364),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Título futurista
+                  Text(
+                    "REGISTER",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      // Un gradiente en el texto con 'Shader'
+                      foreground: Paint()
+                        ..shader = const LinearGradient(
+                          colors: <Color>[
+                            Color(0xFFDA22FF),
+                            Color(0xFF9733EE),
+                          ],
+                        ).createShader(
+                          Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                        ),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Campo de texto para usuario
+                  _buildRoundedTextField(
+                    controller: _usernameController,
+                    label: "Username",
+                    hint: "Enter your username",
+                  ),
+
+                  // Campo de texto para contraseña
+                  _buildRoundedTextField(
+                    controller: _passwordController,
+                    label: "Password",
+                    hint: "Enter your password",
+                    obscure: true,
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Botón de registrar o CircularProgressIndicator
+                  _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _register,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: const Color(0xFF9733EE),
+                      ),
+                      child: const Text(
+                        "SUBMIT",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
     }
   }
+
+
+  // Pantalla de Login
+
+
+
+  class LoginScreen extends StatefulWidget {
+    const LoginScreen({super.key});
+
+    @override
+    State<LoginScreen> createState() => _LoginScreenState();
+  }
+
+  class _LoginScreenState extends State<LoginScreen> {
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+    bool _isLoading = false;
+
+    void _login() async {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      if (email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor ingresa correo y contraseña')),
+        );
+        return;
+      }
+
+      setState(() => _isLoading = true);
+
+      try {
+        // Llamamos a la función real de login que devuelve un token
+        final token = await ApiService.login(email, password);
+        if (token != null) {
+          // Aquí podrías almacenar el token de forma segura (ej: secure_storage)
+          // Navegar a la pantalla principal
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MyHomePage(title: 'ToDo List'),
+            ),
+          );
+        } else {
+          throw 'Credenciales incorrectas';
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+
+    // Reutilizamos un método para crear campos de texto con estilo redondeado
+    Widget _buildRoundedTextField({
+      required TextEditingController controller,
+      required String label,
+      bool obscure = false,
+      TextInputType keyboardType = TextInputType.text,
+    }) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          // Sombra para el efecto “flotante”
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 4,
+              offset: const Offset(2, 4),
+            ),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(color: Colors.white70),
+            filled: true,
+            fillColor: Colors.black54, // Fondo semitransparente
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 16,
+              horizontal: 24,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      );
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        // Eliminamos el AppBar para un diseño “full screen”
+        body: Container(
+          // Gradiente oscuro de fondo
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0F2027),
+                Color(0xFF203A43),
+                Color(0xFF2C5364),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Título con gradiente en el texto
+                  Text(
+                    "INICIAR SESIÓN",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      foreground: Paint()
+                        ..shader = const LinearGradient(
+                          colors: <Color>[
+                            Color(0xFFDA22FF),
+                            Color(0xFF9733EE),
+                          ],
+                        ).createShader(
+                          Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                        ),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Logo (opcional)
+
+                  const SizedBox(height: 24),
+
+                  // Campo de correo
+                  _buildRoundedTextField(
+                    controller: _emailController,
+                    label: 'Correo',
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+
+                  // Campo de contraseña
+                  _buildRoundedTextField(
+                    controller: _passwordController,
+                    label: 'Contraseña',
+                    obscure: true,
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Botón de login o indicador de carga
+                  _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _login,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: const Color(0xFF9733EE),
+                      ),
+                      child: const Text(
+                        'INICIAR SESIÓN',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
 
   // Pantalla para agregar/editar tareas
   class TaskScreen extends StatefulWidget {
