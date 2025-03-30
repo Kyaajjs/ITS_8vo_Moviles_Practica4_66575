@@ -310,7 +310,7 @@
                 children: [
                   // Título futurista
                   Text(
-                    "REGISTER",
+                    "REGISTRO",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -332,15 +332,15 @@
                   // Campo de texto para usuario
                   _buildRoundedTextField(
                     controller: _usernameController,
-                    label: "Username",
-                    hint: "Enter your username",
+                    label: "Corre",
+                    hint: "Coloca tu correo",
                   ),
 
                   // Campo de texto para contraseña
                   _buildRoundedTextField(
                     controller: _passwordController,
-                    label: "Password",
-                    hint: "Enter your password",
+                    label: "Contrasena",
+                    hint: "Coloca tu contrasena",
                     obscure: true,
                   ),
                   const SizedBox(height: 32),
@@ -360,11 +360,25 @@
                         backgroundColor: const Color(0xFF9733EE),
                       ),
                       child: const Text(
-                        "SUBMIT",
+                        "ENTRAR",
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
                         ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Botón para ir a la pantalla de login
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    },
+                    child: const Text(
+                      "¿Ya tienes cuenta? Iniciar sesión",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
                       ),
                     ),
                   ),
@@ -431,7 +445,7 @@
       }
     }
 
-    // Reutilizamos un método para crear campos de texto con estilo redondeado
+    // Método para crear campos de texto con estilo redondeado
     Widget _buildRoundedTextField({
       required TextEditingController controller,
       required String label,
@@ -509,7 +523,7 @@
                             Color(0xFF9733EE),
                           ],
                         ).createShader(
-                          Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                          const Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
                         ),
                     ),
                     textAlign: TextAlign.center,
@@ -517,7 +531,6 @@
                   const SizedBox(height: 32),
 
                   // Logo (opcional)
-
                   const SizedBox(height: 24),
 
                   // Campo de correo
@@ -556,6 +569,18 @@
                       ),
                     ),
                   ),
+
+                  // Botón para ir a la pantalla de registro
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      "¿No tienes cuenta? Regístrate",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -564,7 +589,6 @@
       );
     }
   }
-
 
   // Pantalla para agregar/editar tareas
   class TaskScreen extends StatefulWidget {
