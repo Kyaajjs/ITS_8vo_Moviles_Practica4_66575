@@ -1,12 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';  // Asegúrate de importar SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static final String _apiUrl = dotenv.get('API_URL');
 
   static String? _jwtToken;
+
+  // Función para validar que el correo tenga un formato correcto
+  static bool _isValidEmail(String email) {
+    final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return regex.hasMatch(email);
+  }
 
   // Función para obtener el token desde SharedPreferences
   static Future<String?> _getTokenFromSharedPreferences() async {
@@ -38,6 +44,11 @@ class ApiService {
 
   // Nuevo método para registrar un usuario (se utiliza el correo como username)
   static Future<String?> register(String email, String password) async {
+    // Validar el formato del correo antes de hacer la llamada al API
+    if (!_isValidEmail(email)) {
+      throw Exception('El formato de correo no es válido');
+    }
+
     final response = await http.post(
       Uri.parse('$_apiUrl/auth/register'),
       headers: {'Content-Type': 'application/json'},
@@ -63,7 +74,7 @@ class ApiService {
     // Retorna el encabezado Authorization con el token si existe
     return {
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',  // Incluye el Bearer Token en cada solicitud
+      if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
